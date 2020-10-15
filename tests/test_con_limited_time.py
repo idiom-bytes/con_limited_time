@@ -4,6 +4,7 @@ from datetime import datetime as dt
 
 from unittest import TestCase
 from contracting.client import ContractingClient
+from contracting.stdlib.bridge.time import Datetime as DT
 
 class ConLimitedTimeSpecs(TestCase):
     # before each test, setup the conditions
@@ -35,22 +36,21 @@ class ConLimitedTimeSpecs(TestCase):
         )
 
         # Limited Time Contract should be DISABLED @ now + 4 seconds
-        # t_forward = datetime.timedelta(seconds=4)
-        # environment = {'now': now + t_forward}
-        # has_started = self.con_limited_time.has_started(environment=environment)
-        # has_ended = self.con_limited_time.has_ended(environment=environment)
-        # is_enabled = self.con_limited_time.is_enabled(environment=environment)
-        # assert has_started == False
-        # assert has_ended == False
-        # assert is_enabled == False
+        t_forward = datetime.timedelta(seconds=4)
+        # Environment needs to use the contracting Datetime object
+        environment = {'now': DT._from_datetime(now + t_forward)}
+
+        has_started = self.con_limited_time.has_started(environment=environment)
+        has_ended = self.con_limited_time.has_ended(environment=environment)
+        is_enabled = self.con_limited_time.is_enabled(environment=environment)
+        assert has_started == False
+        assert has_ended == False
+        assert is_enabled == False
 
         # Limited Time Contract should be ENABLED @ now + 6 seconds
-        # TODO - Adjusted t_forward to be @ start + 15 seconds
-        con_start = self.con_limited_time.dt_start.get()
-        t_forward = datetime.timedelta(seconds=15)
-        test_time = now + t_forward
-        con_end = self.con_limited_time.dt_end.get()
-        environment = {'now': test_time}
+        t_forward = datetime.timedelta(seconds=6)
+        # Environment needs to use the contracting Datetime object
+        environment = {'now': DT._from_datetime(now + t_forward)}
         has_started = self.con_limited_time.has_started(environment=environment)
         has_ended = self.con_limited_time.has_ended(environment=environment)
         is_enabled = self.con_limited_time.is_enabled(environment=environment)
@@ -60,7 +60,8 @@ class ConLimitedTimeSpecs(TestCase):
 
         # Limited Time Contract should be ENABLED @ now + 34 seconds
         t_forward = datetime.timedelta(seconds=34)
-        environment = {'now': now + t_forward}
+        # Environment needs to use the contracting Datetime object
+        environment = {'now': DT._from_datetime(now + t_forward)}
         has_started = self.con_limited_time.has_started(environment=environment)
         has_ended = self.con_limited_time.has_ended(environment=environment)
         is_enabled = self.con_limited_time.is_enabled(environment=environment)
@@ -70,7 +71,8 @@ class ConLimitedTimeSpecs(TestCase):
 
         # Limited Time Contract should be DISABLED @ now + 36 seconds
         t_forward = datetime.timedelta(seconds=36)
-        environment = {'now': now + t_forward}
+        # Environment needs to use the contracting Datetime object
+        environment = {'now': DT._from_datetime(now + t_forward)}
         has_started = self.con_limited_time.has_started(environment=environment)
         has_ended = self.con_limited_time.has_ended(environment=environment)
         is_enabled = self.con_limited_time.is_enabled(environment=environment)
