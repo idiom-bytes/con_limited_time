@@ -18,10 +18,12 @@ class ConLimitedTimeSpecs(TestCase):
         self.con_limited_time = self.client.get_contract('con_limited_time')
 
     def test_1_limited_time(self):
-        d = dt.now()
-        t = datetime.timedelta(seconds=5)
+        now = dt.now()
 
-        dt_start = d+t
+        # Limited Time Contract will START in now + 5 seconds
+        # Limited Time Contract will END in now + 35 seconds
+        wait_to_start = datetime.timedelta(seconds=5)
+        dt_start = now + wait_to_start
         self.con_limited_time.set_limited_time_seconds(
             y=dt_start.year,
             m=dt_start.month,
@@ -32,22 +34,43 @@ class ConLimitedTimeSpecs(TestCase):
             n_seconds=30
         )
 
-        # time.sleep(2)
-        # can_trigger = self.con_limited_time.can_trigger()
-        # assert can_trigger == False
+        # Limited Time Contract should be DISABLED @ now + 4 seconds
+        t_forward = datetime.timedelta(seconds=4)
+        environment = {'now': now + t_forward}
+        has_started = self.con_limited_time.has_started(environment=environment)
+        has_ended = self.con_limited_time.has_ended(environment=environment)
+        is_enabled = self.con_limited_time.is_enabled(environment=environment)
+        assert has_started == False
+        assert has_ended == False
+        assert is_enabled == False
 
-        time.sleep(10)
-        con_start = self.con_limited_time.dt_start.get()
-        dt_now = dt.now()
-        has_started = dt_now > con_start
+        # Limited Time Contract should be ENABLED @ now + 6 seconds
+        # TODO - Adjusted t_forward to be @ start + 15 seconds
+        t_forward = datetime.timedelta(seconds=15)
+        environment = {'now': now + t_forward}
+        has_started = self.con_limited_time.has_started(environment=environment)
+        has_ended = self.con_limited_time.has_ended(environment=environment)
+        is_enabled = self.con_limited_time.is_enabled(environment=environment)
+        assert has_started == True
+        assert has_ended == False
+        assert is_enabled == True
 
-        con_end = self.con_limited_time.dt_end.get()
-        has_ended = dt_now < con_end
+        # Limited Time Contract should be ENABLED @ now + 34 seconds
+        t_forward = datetime.timedelta(seconds=34)
+        environment = {'now': now + t_forward}
+        has_started = self.con_limited_time.has_started(environment=environment)
+        has_ended = self.con_limited_time.has_ended(environment=environment)
+        is_enabled = self.con_limited_time.is_enabled(environment=environment)
+        assert has_started == True
+        assert has_ended == False
+        assert is_enabled == True
 
-        # can_trigger() == dt_now > con_start and dt_now < con_end
-        can_trigger = self.con_limited_time.can_trigger()
-        assert can_trigger == True
-
-        time.sleep(6)
-        can_trigger = self.con_limited_time.can_trigger()
-        assert can_trigger == False
+        # Limited Time Contract should be DISABLED @ now + 36 seconds
+        t_forward = datetime.timedelta(seconds=36)
+        environment = {'now': now + t_forward}
+        has_started = self.con_limited_time.has_started(environment=environment)
+        has_ended = self.con_limited_time.has_ended(environment=environment)
+        is_enabled = self.con_limited_time.is_enabled(environment=environment)
+        assert has_started == True
+        assert has_ended == True
+        assert is_enabled == False

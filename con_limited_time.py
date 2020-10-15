@@ -23,5 +23,13 @@ def set_limited_time_seconds(y:int, m:int, d:int, H:int, M:int, S:int, n_seconds
     dt_end.set(d + t)
 
 @export
-def can_trigger():
+def has_started():
+    return now > dt_start.get()
+
+@export
+def has_ended():
+    return now > dt_end.get()
+
+@export
+def is_enabled():
     return now > dt_start.get() and now < dt_end.get()
