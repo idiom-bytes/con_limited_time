@@ -7,9 +7,17 @@ def seed():
     dt_end.set(0)
 
 @export
-def set_timer(start:str, n_seconds:int):
-    d = datetime.Datetime(year=2020, month=10, day=10)
-    t = datetime.Timedelta(seconds=n_seconds)
+def set_limited_time_seconds(y:int, m:int, d:int, H:int, M:int, S:int, n_seconds:int):
+    d = datetime.datetime(
+        year=y,
+        month=m,
+        day=d,
+        hour=H,
+        minute=M,
+        second=S,
+    )
+
+    t = datetime.timedelta(seconds=n_seconds)
 
     dt_start.set(d)
     dt_end.set(d + t)
